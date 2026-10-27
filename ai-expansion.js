@@ -101,14 +101,14 @@ async function generate(){
  if(!theme){setAIStatus('Describe what to discover.',true);return}
  const launch=selected('expansionGenerate'),halt=selected('expansionStop');
  launch.disabled=true;halt.disabled=false;running=true;stopRequested=false;completed=0;targetTotal=goal;
- const batches=Math.ceil(goal/10);
+ const batches=Math.ceil(goal/5);
  const baseAnchors=base.filter(e=>e.year>=from&&e.year<=to).filter(e=>!e.expansionFor).sort((a,b)=>a.year-b.year);
  const allKnown=new Set(EVENTS.filter(e=>e.expansionFor===journeyKey||base.includes(e)).map(uniqueTitle));
  let error=null;
  try{
  for(let step=0;step<batches;step++){
   if(stopRequested)break;
-  const requested=Math.min(10,goal-step*10);
+  const requested=Math.min(5,goal-step*5);
   const lo=(baseAnchors.length>=batches&&scope!=='custom')?baseAnchors[Math.floor(step*baseAnchors.length/batches)].year:Math.floor(from+(to-from)*step/batches);
   const hi=(baseAnchors.length>=batches&&scope!=='custom')?baseAnchors[Math.min(baseAnchors.length-1,Math.floor((step+1)*baseAnchors.length/batches))].year:Math.ceil(from+(to-from)*(step+1)/batches);
   const low=Math.max(from,Math.min(lo,hi)),high=Math.min(to,Math.max(lo,hi));
@@ -117,7 +117,7 @@ async function generate(){
   const prompt='Timeline: '+JOURNEYS[journeyKey].title+'\nFocus: '+theme+'\nPeriod for this batch: '+low+' through '+high+' (inclusive).\n'+
    'Produce approximately '+requested+' NEW, UNIQUE real events. Mix: '+mix+'. Detail level: '+depth+'. '+
    'Prefer precise established dates, or mark approximate dates explicitly. Never duplicate any of these existing moments:\n'+anchors+'\n'+
-   'Return only JSON with {"events":[{"year":1912,"date":"April 1912","title":"...","region":"...","tags":["culture","science"],"major":false,"summary":"2–3 sentences","why":"2–3 sentences of consequences","context":"'+(depth==='deep'?'5–8':'3–5')+' connected historical sentences","facts":["specific lesser-known fact 1","fact 2"],"narration":"optional natural spoken explanation","wiki":"relevant real English Wikipedia article title"}]}. All events must be within the designated period. Use at least '+(mix==='major'?2:mix==='minor'?7:4)+' minor events out of 10; explore circumstances between famous events. If exact day is unknown, give approximate year, do not invent exact dates. No fabricated quotations, URLs or citations.';
+   'Return only JSON with {"events":[{"year":1912,"date":"April 1912","title":"...","region":"...","tags":["culture","science"],"major":false,"summary":"2–3 sentences","why":"2–3 sentences of consequences","context":"'+(depth==='deep'?'5–8':'3–5')+' connected historical sentences","facts":["specific lesser-known fact 1","fact 2"],"narration":"optional natural spoken explanation","wiki":"relevant real English Wikipedia article title"}]}. All events must be within the designated period. Use at least '+(mix==='major'?1:mix==='minor'?4:2)+' minor events out of '+requested+'; explore circumstances between famous events. If exact day is unknown, give approximate year, do not invent exact dates. No fabricated quotations, URLs or citations.';
   setAIStatus('Batch '+(step+1)+' of '+batches+': discovering events between '+fmtYear(low)+' and '+fmtYear(high)+'…');
   selected('expansionProgress').textContent=completed+' added so far · each completed batch is already saved.';
   const data=await deepseekJSON('You are a careful historical timeline editor. Output a JSON object only. Prefer widely documented, verifiable events. No fictional dates or sources. Use a diverse mix of everyday life, politics, arts, science, innovations and precursor events where relevant.',prompt,Math.min(10500,Math.max(3800,requested*650)));
