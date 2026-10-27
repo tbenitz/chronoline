@@ -98,7 +98,6 @@ async function runBuild(row){
   return next.length;
  };
  const request=async(low,high,want,attempt=0)=>{
-  if(stopAfterBatch)return 0;
   const already=row.events.filter(e=>e.year>=low&&e.year<=high).slice(-24).map(e=>e.year+' '+e.title).join('; ');
   const compact=attempt>=2;
   const system='You are a careful public historian. Respond with ONE valid JSON object with an events array. Ground dates in widely documented history; use approximate years rather than inventing exact days. JSON structure: {"events":[{"year":1969,"date":"July 20, 1969","title":"Example title","region":"Global","tags":["science"],"major":true,"summary":"Two informative sentences.","why":"Why it mattered.","context":"Historical causes, details and the next consequence.","facts":["lesser-known fact"],"wiki":"Related Wikipedia article title"}]}. Keep each item concise, distinctive and supported by established history. Do not output markdown.';
