@@ -28,6 +28,7 @@ jobs:
           test -f index.html
           test -f ai-expansion.js
           node --check ai-expansion.js
+          node --check ai-batched-builder.js
           python3 - <<'PY'
           from pathlib import Path
           html=Path('index.html').read_text()
