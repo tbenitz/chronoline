@@ -23,6 +23,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Verify site assets and JavaScript
+        run: |
+          test -f index.html
+          test -f ai-expansion.js
+          node --check ai-expansion.js
+          python3 - <<'PY'
+          from pathlib import Path
+          html=Path('index.html').read_text()
+          assert 'ai-expansion.js' in html
+          inline=html.split('<script>',1)[1].split('</script>',1)[0]
+          Path('/tmp/chronoline-inline.js').write_text(inline)
+          PY
+          node --check /tmp/chronoline-inline.js
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
         with:
