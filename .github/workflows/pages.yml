@@ -37,6 +37,19 @@ jobs:
           Path('/tmp/chronoline-inline.js').write_text(inline)
           PY
           node --check /tmp/chronoline-inline.js
+      - name: Bundle KittenTTS Nano browser engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          # The SDK used previously was not available at esm.sh and caused HTTP 404.
+          # Fetch a published, pinned, standalone ESM build during deployment instead.
+          npm pack kitten-tts-webgpu@0.1.1 --silent --pack-destination "$RUNNER_TEMP"
+          tar -xOf "$RUNNER_TEMP/kitten-tts-webgpu-0.1.1.tgz" package/dist-lib/index.js > assets/kitten-tts-webgpu.js
+          tar -xOf "$RUNNER_TEMP/kitten-tts-webgpu-0.1.1.tgz" package/LICENSE > assets/kitten-tts-LICENSE.txt
+          test "$(wc -c < assets/kitten-tts-webgpu.js)" -gt 100000
+          node --check assets/kitten-tts-webgpu.js
+          echo "Vendored browser engine: $(wc -c < assets/kitten-tts-webgpu.js) bytes"
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
         with:
