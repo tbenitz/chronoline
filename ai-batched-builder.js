@@ -73,6 +73,7 @@ async function runBuild(row){
  let error=null;
  const b=row.build, batchSize=4,totalBatches=Math.ceil(b.target/batchSize);
  let keys=new Set(row.events.map(signature));
+ let nextEventId=Math.max(-1,...row.events.map(e=>{const m=String(e.id||'').match(/-e(\d+)$/);return m?Number(m[1]):-1}))+1;
  const addEvents=async generated=>{
   const next=[];
   for(const raw of generated){
@@ -88,7 +89,7 @@ async function runBuild(row){
    };
    const sig=signature(item);
    if(keys.has(sig))continue;
-   keys.add(sig);next.push(item);
+   keys.add(sig);item.id=row.id+'-e'+(nextEventId++);next.push(item);
   }
   if(!next.length)return 0;
   row.events.push(...next);row.events.sort((a,c)=>a.year-c.year||a.date.localeCompare(c.date));
