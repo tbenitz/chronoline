@@ -72,3 +72,14 @@ The **Create a journey with AI** action now requests **8–100 historical moment
 - Existing historical timelines support **Add events & facts** with five-event API batches.
 
 If you're still seeing the old "AI reply was truncated. Request fewer events" message immediately on a new custom journey, hard-refresh the GitHub Pages site (Ctrl+Shift+R) and confirm that both ai-batched-builder.js and ai-expansion.js loaded successfully in Chrome DevTools → Network.
+
+
+## KittenTTS Nano 0.8 — browser playback and 404 fix
+
+The previously used URL `https://esm.sh/@kittentts/web?bundle` produced HTTP 404. ChronoLine now uses the published `kitten-tts-webgpu@0.1.1` implementation of KittenTTS Nano v0.8. Its standalone browser ESM bundle is copied into the GitHub Pages artifact at `/chronoline/assets/kitten-tts-webgpu.js` automatically by [the deployment workflow](.github/workflows/pages.yml). This avoids depending on an unpublished or unavailable browser SDK URL at runtime.
+
+In Settings → Narrated Autoplay, choose a voice (Bella, Jasper, Luna, Bruno, Rosie, Hugo, Kiki, Leo) and press **Test voice**. The published KittenTTS engine uses **WebGPU**; the Nano model and voice data download from KittenML on Hugging Face on first synthesis (~25 MB) and are cached. If the model, WebGPU, or downloads fail, browser voices are used automatically, with a one-time notice, and narrated mode still waits for every spoken segment to end before switching cards.
+
+This replacement is a community WebGPU implementation, not the official KittenML web SDK. The underlying model is KittenML's v0.8 Nano and the app uses it in-browser. The official SDK's package import was the source of the original 404. See [the community package](https://www.npmjs.com/package/kitten-tts-webgpu) and the [upstream model](https://huggingface.co/KittenML/kitten-tts-nano-0.8-int8).
+
+If the page still shows an old `esm.sh/@kittentts/web` error, the old website version is cached or the new Pages deployment has not completed: open [Actions](https://github.com/tbenitz/chronoline/actions), confirm the Pages build, and hard-refresh the tab. Confirm the local `assets/kitten-tts-webgpu.js` request succeeds. If it loads but speech still fails, check WebGPU support and the Hugging Face model requests in DevTools → Network.
