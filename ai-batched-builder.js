@@ -106,7 +106,7 @@ async function runBuild(row){
   try{
    const data=await deepseekJSON(system,prompt,Math.max(3000,Math.min(6500,want*900+1200)));
    if(!Array.isArray(data.events))throw Error('JSON missing the events list.');
-   const added=await addEvents(data.events.slice(0,want+2));
+   const added=await addEvents(data.events.slice(0,want));
    if(!added)throw Error('No new valid events returned for '+fmtYear(low)+'–'+fmtYear(high)+'.');
    return added;
   }catch(e){
