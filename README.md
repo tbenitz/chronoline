@@ -36,3 +36,24 @@ Original curated events are included in HTML. AI-generated or enhanced history c
 
 ## Run locally
 Download `index.html` and open it in Chrome. The curated experience works standalone; some browser environments limit IndexedDB for `file://` pages, so the HTTPS GitHub Pages version is recommended for AI journey storage and model caching.
+
+
+## DeepSeek: add more events to existing history
+
+Open a historical journey and select **✦ Add events & facts** at the top of the timeline. Request 12, 30, 60 or 100 additional moments with a custom topic, date range and major/minor event balance. The app uses DeepSeek Flash by default and also offers DeepSeek V4 Pro. Generated moments join the existing chronological timeline and include dates, summaries, significance, details and lesser-known facts. Each set of up to 10 moments is saved in IndexedDB before the next API call. You can stop after a batch or clear additions without affecting curated records. AI-authored additions are local to your device and require fact-checking.
+
+The **✦ DeepSeek AI** entry is also visible in the top navigation. On the home screen it creates a fresh journey; within a timeline it opens the expansion tool. **Enrich existing cards** edits descriptions and context only. **Add events & facts** creates new timeline entries.
+
+**API setup:** Obtain a key at [DeepSeek Platform](https://platform.deepseek.com/), open the expansion tool and paste your key. No API key is stored in this public repository. The app can optionally store it for the current browser tab only.
+
+### If DeepSeek requests are blocked by CORS
+
+Browser-based API calls may be rejected by the upstream provider's cross-origin policy. A GitHub Pages site cannot run a server by itself. An optional Cloudflare Worker is provided in [optional-deepseek-worker.js](optional-deepseek-worker.js). Create a Worker in your own Cloudflare account, paste the script and deploy, then put the worker's HTTPS URL plus /chat/completions in the advanced API endpoint field. This worker does not contain or retain keys; each user supplies their own API key. Do not deploy a worker that hardcodes your DeepSeek API key for anonymous public visitors.
+
+### If you see HTTP 404
+
+1. If the **whole site** is 404, open [Settings → Pages](https://github.com/tbenitz/chronoline/settings/pages), select **GitHub Actions** as the publishing source and check the [Actions](https://github.com/tbenitz/chronoline/actions) deployment run.
+2. If **only an image or model resource** fails, copy the complete failing request URL from Chrome DevTools → Network. It could be a Wikimedia image, KittenTTS/Hugging Face asset or an undeployed file.
+3. Verify [index.html](index.html) and [ai-expansion.js](ai-expansion.js) are both in the repository root; hard-refresh with Ctrl+Shift+R after deploying to avoid an old cached page.
+4. The Pages address is https://tbenitz.github.io/chronoline/.
+
