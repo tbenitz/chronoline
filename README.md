@@ -57,3 +57,18 @@ Browser-based API calls may be rejected by the upstream provider's cross-origin 
 3. Verify [index.html](index.html) and [ai-expansion.js](ai-expansion.js) are both in the repository root; hard-refresh with Ctrl+Shift+R after deploying to avoid an old cached page.
 4. The Pages address is https://tbenitz.github.io/chronoline/.
 
+
+
+## Resilient AI journey building (truncation fix)
+
+The **Create a journey with AI** action now requests **8–100 historical moments** using small, consecutive DeepSeek requests instead of attempting to get the entire timeline in one JSON response. It explicitly uses the API's **non-thinking** mode for structured JSON responses, preventing reasoning tokens from using up the JSON output allowance. This follows [DeepSeek's thinking control](https://api-docs.deepseek.com/guides/thinking_mode/) and [JSON Output guidance](https://api-docs.deepseek.com/guides/json_mode/).
+
+- Progress shows current event count and a progress bar.
+- Each successful response is added to the journey record in **IndexedDB** immediately.
+- If the API reply is truncated, the request automatically splits into smaller parts; failed calls are not treated as successfully generated events.
+- Press **Stop after this batch** for a safe pause; **Resume unfinished journey** can restore the latest incomplete journey after a refresh.
+- Generated events receive stable IDs as they arrive so inserted chronological events do not move bookmarks.
+- Larger journeys incur multiple billable DeepSeek requests. AI-generated historical content must still be fact-checked.
+- Existing historical timelines support **Add events & facts** with five-event API batches.
+
+If you're still seeing the old "AI reply was truncated. Request fewer events" message immediately on a new custom journey, hard-refresh the GitHub Pages site (Ctrl+Shift+R) and confirm that both ai-batched-builder.js and ai-expansion.js loaded successfully in Chrome DevTools → Network.
